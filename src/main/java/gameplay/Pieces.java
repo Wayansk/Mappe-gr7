@@ -44,7 +44,7 @@ public class Pieces {
          *
          * @return the JavaFX {@link Color} of this piece color.
          */
-        public Color getFxColor() {
+        public Color getFxColor() {     // Will be used later for the GUI
             return fxColor;
         }
     }
