@@ -1,6 +1,5 @@
-package gameplayTest;
+package gameplay;
 
-import gameplay.Dice;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
