@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
  * This class is used to manage game pieces in a gameplay scenario.
  * </p>
  */
-public class Pieces {
+public class Player {
 
     /**
      * Enumeration of possible colors for game pieces.
@@ -58,7 +58,7 @@ public class Pieces {
      * @param nameOfPiece the name of the piece.
      * @param color       the {@link PieceColor} of the piece.
      */
-    public Pieces(String nameOfPiece, PieceColor color) {
+    public Player(String nameOfPiece, PieceColor color) {
         setNameOfPiece(nameOfPiece);
         setColorOfPiece(color);
     }
