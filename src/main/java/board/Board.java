@@ -18,7 +18,7 @@ public class Board {
   }
 
   private void setupSpecialSquares() {
-    // TODO: figure out where the special squares should be
+     // TODO: figure out where the special squares should be
     // ladders: square -> destination (higher number)
     gameBoard[3] = 12;
     gameBoard[7] = 19;
