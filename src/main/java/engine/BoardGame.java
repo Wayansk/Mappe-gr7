@@ -13,4 +13,11 @@ public class BoardGame {
     private List<Player> players;
     private Dice dice;
 
+
+    public void addPlayer(Player player){
+        players.add(player);
+    }
+
+    public void createBoard(){
+    }
 }
