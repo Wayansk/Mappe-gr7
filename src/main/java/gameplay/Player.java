@@ -25,6 +25,11 @@ public class Player {
         setCurrentTile(currentTile);
     }
 
+    /**
+     * Sets the current tile
+     *
+     * @param currentTile the tile on the board (ID and specific tile)
+     */
     public void setCurrentTile(Tile currentTile){
         this.currentTile = currentTile;
     }
@@ -38,6 +43,11 @@ public class Player {
         this.nameOfPiece = nameOfPiece;
     }
 
+    /**
+     * Returns the current tile
+     *
+     * @return the tile on the board
+     */
     public Tile getCurrentTile(){
         return currentTile;
     }
