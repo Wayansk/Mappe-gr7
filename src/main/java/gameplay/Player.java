@@ -1,6 +1,6 @@
 package gameplay;
 
-import javafx.scene.paint.Color;
+import board.Tile;
 
 /**
  * Represents a game piece with a specific name, color, and quantity.
@@ -10,57 +10,23 @@ import javafx.scene.paint.Color;
  */
 public class Player {
 
-    /**
-     * Enumeration of possible colors for game pieces.
-     * <p>
-     * Each enum constant is associated with a JavaFX {@link Color} instance.
-     * </p>
-     */
-    public enum PieceColor {
-        RED(Color.RED),
-        BLUE(Color.BLUE),
-        GREEN(Color.GREEN),
-        YELLOW(Color.YELLOW),
-        VIOLET(Color.VIOLET),
-        PINK(Color.PINK),
-        WHITE(Color.WHITE),
-        BLACK(Color.BLACK),
-        ORANGE(Color.ORANGE),
-        PURPLE(Color.PURPLE);
-
-        private final Color fxColor;
-
-        /**
-         * Constructs a {@code PieceColor} with the specified JavaFX color.
-         *
-         * @param fxColor the JavaFX {@link Color} associated with this piece color.
-         */
-        PieceColor(Color fxColor) {
-            this.fxColor = fxColor;
-        }
-
-        /**
-         * Returns the JavaFX {@link Color} associated with this piece color.
-         *
-         * @return the JavaFX {@link Color} of this piece color.
-         */
-        public Color getFxColor() {     // Will be used later for the GUI
-            return fxColor;
-        }
-    }
 
     private String nameOfPiece;
-    private PieceColor color;
+    private Tile currentTile;
 
     /**
      * Constructs a {@code Pieces} instance with the specified number of pieces, name, and color.
      *
      * @param nameOfPiece the name of the piece.
-     * @param color       the {@link PieceColor} of the piece.
+     * @param currentTile the current tile of the player
      */
-    public Player(String nameOfPiece, PieceColor color) {
+    public Player(String nameOfPiece, Tile currentTile) {
         setNameOfPiece(nameOfPiece);
-        setColorOfPiece(color);
+        setCurrentTile(currentTile);
+    }
+
+    public void setCurrentTile(Tile currentTile){
+        this.currentTile = currentTile;
     }
 
     /**
@@ -72,13 +38,8 @@ public class Player {
         this.nameOfPiece = nameOfPiece;
     }
 
-    /**
-     * Sets the color of the piece.
-     *
-     * @param color the {@link PieceColor} to assign to the piece.
-     */
-    public void setColorOfPiece(PieceColor color) {
-        this.color = color;
+    public Tile getCurrentTile(){
+        return currentTile;
     }
 
     /**
@@ -88,14 +49,5 @@ public class Player {
      */
     public String getNameOfPiece() {
         return nameOfPiece;
-    }
-
-    /**
-     * Returns the color of the piece.
-     *
-     * @return the {@link PieceColor} of the piece.
-     */
-    public PieceColor getColorOfPiece() {
-        return color;
     }
 }
