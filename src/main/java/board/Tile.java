@@ -20,9 +20,6 @@ public class Tile {
      * @throws IllegalArgumentException if the tileId is less than 1
      */
     public Tile(int tileId){
-        if (tileId < 1){
-            throw new IllegalArgumentException("Tile ID must be 1, or above.");
-        }
         this.tileId = tileId;
     }
 
