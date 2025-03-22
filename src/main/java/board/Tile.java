@@ -24,6 +24,14 @@ public class Tile {
     }
 
     /**
+     * Sets the specific action when landing on a tile
+     * @param landAction action on landing
+     */
+    public void setLandAction(TileAction landAction) {
+        this.landAction = landAction;
+    }
+
+    /**
      * Executes the action associated with the tile when a player lands on it.
      * If no action is set for the tile, no action will be performed.
      *
