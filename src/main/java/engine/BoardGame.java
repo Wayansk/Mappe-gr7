@@ -3,78 +3,62 @@ package engine;
 import board.Board;
 import gameplay.Dice;
 import gameplay.Player;
-import persistence.PlayerManager;
-
-
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class BoardGame {
-    private List<Player> players;
-    private TurnManager turnManager;
-    private Dice dice;
-    private Board board;
-    private int[] positions;
+    private final Board board;
+    private final Dice dice;
+    private final List<Player> players;
+    private final game.TurnManager turnManager;
 
+    /**
+     * Constructs a BoardGame by initializing the board, dice, and an empty player list.
+     * It also creates a TurnManager to handle turn-based gameplay.
+     */
     public BoardGame() {
-        // empty constructor; setup happens separately
+        board = new Board();
+        dice = new Dice(1); // Using one die for classic Snakes and Ladders.
+        players = new ArrayList<>();
+        turnManager = new game.TurnManager(players, dice, board);
     }
 
     /**
-     * loads players from csv file or registers new ones if none exist
+     * Adds a new player to the game.
+     * Players start on the first tile
+     *
+     * @param name the name of the player
      */
-    public void setupPlayers() {
-        String filePath = "players.csv";
-
-        players = PlayerManager.loadPlayers(filePath);
-        if (players.isEmpty()) {
-            System.out.println("No existing player profiles found. Registering new ones...");
-            players = PlayerManager.registerPlayers(filePath);
-        } else {
-            System.out.println("Loaded player profiles from file");
-        }
-
-        turnManager = new TurnManager(players);
-        dice = new Dice();
-        positions = new int[players.size()];
+    public void addPlayer(String name) {
+        Player player = new Player(name, board.getTile(0));
+        players.add(player);
     }
 
     /**
-     * Initializes a new Board of the given size
-     * @param size size of the board; for example 50
+     * Starts the game by prompting the user for the number of players and their names,
+     * then initiating the turn-based gameplay loop.
      */
-    public void setupBoard(int size) {
-        board = new Board(size);
-    }
-
-    /**
-     * Runs the game logic (currently for a terminal demo)
-     * TODO: update for human playing
-     * throws error if players or board have not been set up
-     */
-    public void startGame() {
-        if (players == null || players.isEmpty()) {
-            throw new IllegalArgumentException("No players found");
+    public void start() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter number of players:");
+        int numPlayers = 0;
+        while (numPlayers <= 0) {
+            try {
+                numPlayers = Integer.parseInt(scanner.nextLine());
+                if (numPlayers <= 0) {
+                    System.out.println("Please enter a positive number.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter a number.");
+            }
         }
-        if (board == null) {
-            throw new IllegalStateException("No board found");
+        for (int i = 1; i <= numPlayers; i++) {
+            System.out.println("Enter name for player " + i + ":");
+            String name = scanner.nextLine();
+            addPlayer(name);
         }
-
-        for (int turn = 0; turn < 10; turn++) {
-            Player currentPlayer = turnManager.getCurrentPlayer();
-            int playerIndex = players.indexOf(currentPlayer);
-
-            System.out.println("\n--- Turn " + (turn + 1) + " ---");
-            System.out.println("Current player: " + currentPlayer.getNameOfPiece());
-
-            int diceRoll = dice.roll();
-            System.out.println("Rolled a: " + diceRoll);
-
-            int newPosition = board.movePlayer(positions[playerIndex], diceRoll);
-            positions[playerIndex] = newPosition;
-            System.out.println(currentPlayer.getNameOfPiece() + " moves to square " + newPosition);
-
-            turnManager.nextTurn(diceRoll);
-        }
-        System.out.println("\n Game demo over after 10 turns");
+        // TurnManager to handle the gameplay.
+        turnManager.manageTurns();
     }
 }
