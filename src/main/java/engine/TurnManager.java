@@ -1,4 +1,4 @@
-package game;
+package engine;
 
 import board.Board;
 import board.Tile;
@@ -6,7 +6,11 @@ import gameplay.Dice;
 import gameplay.Player;
 import java.util.List;
 
+/**
+ * This class handles the turns of each player and their movement.
+ */
 public class TurnManager {
+
   private final List<Player> players;
   private final Dice dice;
   private final Board board;
@@ -27,10 +31,9 @@ public class TurnManager {
   }
 
   /**
-   * Manages the turn-based gameplay loop.
-   * Each player takes a turn to roll the dice, move along the board,
-   * and trigger any tile-specific actions. The loop ends when a player
-   * reaches the final tile (tile 90).
+   * Manages the turn-based gameplay loop. Each player takes a turn to roll the dice, move along the
+   * board, and trigger any tile-specific actions. The loop ends when a player reaches the final
+   * tile (tile 90).
    */
   public void manageTurns() {
     int currentPlayerIndex = 0;
@@ -59,7 +62,7 @@ public class TurnManager {
       currentPlayer.setCurrentTile(newTile);
       System.out.println(currentPlayer.getNameOfPiece() + " moved to tile " + newTile.getTileId());
 
-      // Trigger any action associated with landing on the tile (e.g., ladder or snake).
+      // Trigger any action associated with landing on the tile
       newTile.landPlayer(currentPlayer);
 
       // Check win condition.
