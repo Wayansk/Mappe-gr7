@@ -1,16 +1,20 @@
 package gameplay;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-public class DiceRollTest {
+class DiceRollTest {
+
   @Test
-  public void testDiceRollWithinRange() {
-    Dice dice = new Dice();
-    for (int i = 0; i < 50; i++) { // Roll multiple times
-      int roll = dice.roll();
-      System.out.println("Roll #" + (i + 1) + ": " + roll);
-      assertTrue(roll >= 1 && roll <= 6, "Dice roll out of range: " + roll);
-    }
+  void testRollDiceSumInRange() {
+    int numberOfDice = 3;
+    Dice dice = new Dice(numberOfDice);
+    dice.rollDice();
+
+    int sum = dice.getRollSum();
+    int maxSum = numberOfDice * 6;  // maximum sum
+
+    assertTrue(sum >= numberOfDice && sum <= maxSum,
+            "Roll sum " + sum + " is not in the range [" + numberOfDice + ", " + maxSum + "]");
   }
 }

@@ -1,19 +1,45 @@
 package gameplay;
 
-import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Represents a collection of dice.
+ */
 public class Dice {
-  private Random random;
+  private final List<Die> dice;
+  private int rollSum = 0;
 
-  public Dice() {
-    this.random = new Random();
+  /**
+   * Constructs a Dice object with the specified number of dice.
+   *
+   * @param numberOfDice the number of dice to create.
+   */
+  public Dice(int numberOfDice) {
+    dice = new ArrayList<>();
+    for (int i = 0; i < numberOfDice; i++) {
+      dice.add(new Die());
+    }
   }
 
   /**
-   * Rolls the dice and returns a value between 1 and 6.
-   * @return A random integer between 1 and 6.
+   * Rolls all dice and accumulates their values into a sum.
    */
-  public int roll() {
-    return random.nextInt(6) + 1;
+  public void rollDice() {
+    // Optionally, reset rollSum if multiple rolls are expected.
+    rollSum = 0;
+    for (Die die : dice) {
+      die.roll();
+      rollSum += die.getLasRolledNumber();
+    }
+  }
+
+  /**
+   * Returns the total sum of the last dice roll.
+   *
+   * @return the sum of the rolled values.
+   */
+  public int getRollSum() {
+    return rollSum;
   }
 }

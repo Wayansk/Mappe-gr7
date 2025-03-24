@@ -3,35 +3,44 @@ package gameplay;
 import board.Tile;
 
 /**
- * Represents a game piece with a specific name, color, and quantity.
+ * Represents a game piece with a specific name and a current tile.
  * <p>
- * This class is used to manage game pieces in a gameplay scenario.
+ * This class manages the player’s state during gameplay.
  * </p>
  */
 public class Player {
-
 
     private String nameOfPiece;
     private Tile currentTile;
 
     /**
-     * Constructs a {@code Pieces} instance with the specified number of pieces, name, and color.
+     * Constructs a {@code Player} instance with the specified name.
+     * The player's starting tile is set to the provided tile.
      *
      * @param nameOfPiece the name of the piece.
-     * @param currentTile the current tile of the player
+     * @param startingTile the tile on which the player starts.
      */
-    public Player(String nameOfPiece, Tile currentTile) {
+    public Player(String nameOfPiece, Tile startingTile) {
         setNameOfPiece(nameOfPiece);
-        setCurrentTile(currentTile);
+        this.currentTile = startingTile;
     }
 
     /**
-     * Sets the current tile
+     * Updates the current tile of the player on the board.
      *
-     * @param currentTile the tile on the board (ID and specific tile)
+     * @param newTile the new tile where the player moves.
      */
-    public void setCurrentTile(Tile currentTile){
-        this.currentTile = currentTile;
+    public void setCurrentTile(Tile newTile) {
+        this.currentTile = newTile;
+    }
+
+    /**
+     * Returns the current tile of the player.
+     *
+     * @return the current {@code Tile} object.
+     */
+    public Tile getCurrentTile() {
+        return currentTile;
     }
 
     /**
@@ -41,15 +50,6 @@ public class Player {
      */
     public void setNameOfPiece(String nameOfPiece) {
         this.nameOfPiece = nameOfPiece;
-    }
-
-    /**
-     * Returns the current tile
-     *
-     * @return the tile on the board
-     */
-    public Tile getCurrentTile(){
-        return currentTile;
     }
 
     /**
