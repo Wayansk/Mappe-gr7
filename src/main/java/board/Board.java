@@ -1,45 +1,36 @@
 package board;
 
+/**
+ * A simple game board with 90 tiles for Snakes and Ladders.
+ */
 public class Board {
-  private final int size;
-  private final int[] gameBoard;
+  private static final int SIZE = 90;
+  private final Tile[] tiles;
 
-  public Board(int size) {
-    this.size = size;
-    gameBoard = new int[size + 1];
+  /**
+   * Creates the board, initializes 90 tiles, and sets up ladder and snake actions.
+   */
+  public Board() {
+    tiles = new Tile[SIZE];
     initializeBoard();
-    setupSpecialSquares();
+
+    // Ladders
+    tiles[3].setLandAction(new LadderAction(4, 14, tiles[13]));
+    tiles[9].setLandAction(new LadderAction(10, 27, tiles[26]));
+    tiles[28].setLandAction(new LadderAction(29, 57, tiles[56]));
+
+    // Snakes (using LadderAction as a placeholder)
+    tiles[80].setLandAction(new LadderAction(81, 64, tiles[63]));
+    tiles[50].setLandAction(new LadderAction(51, 32, tiles[31]));
+    tiles[15].setLandAction(new LadderAction(16, 2, tiles[3]));
   }
 
+  /**
+   * Initializes the board with tiles numbered 1 to 90.
+   */
   private void initializeBoard() {
-    for (int i = 1; i <= size; i++) {
-      gameBoard[i] = i;
+    for (int i = 0; i < SIZE; i++) {
+      tiles[i] = new Tile(i + 1);
     }
-  }
-
-  private void setupSpecialSquares() {
-    // TODO: figure out where the special squares should be
-    // ladders: square -> destination (higher number)
-    gameBoard[3] = 12;
-    gameBoard[7] = 19;
-
-    // snakes: same thing (lower number)
-    gameBoard[15] = 1;
-    gameBoard[24] = 5;
-  }
-
-  public int getDestination(int square) {
-    if (square < 1 || square > size) {
-      throw new IllegalArgumentException("Invalid square number: " + square);
-    }
-    return gameBoard[square];
-  }
-
-  public int movePlayer(int currentSquare, int diceRoll) {
-    int nextSquare = currentSquare + diceRoll;
-    if (nextSquare > size) {
-      return currentSquare; // stay on the same square if you roll past the size of the board
-    }
-    return getDestination(nextSquare);
   }
 }
