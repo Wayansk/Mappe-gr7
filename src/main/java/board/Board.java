@@ -33,4 +33,13 @@ public class Board {
       tiles[i] = new Tile(i + 1);
     }
   }
+
+  /**
+   * Returns the tile of the index in tiles
+   * @param index number to the tile in tiles
+   * @return the index of the tile
+   */
+  public Tile getTile(int index){
+    return tiles[index];
+  }
 }
