@@ -2,52 +2,60 @@ package board;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import java.lang.reflect.Field;
+import gameplay.Player;
 
 class BoardTest {
-  void testNormalMove() {
-    Board board = new Board(30);
 
-    int currentSquare = 1;
-    int diceRoll = 1;
-    int expected = 2;
-    int result = board.movePlayer(currentSquare, diceRoll);
-
-    assertEquals(expected, result, "piece is supposed to move from 1 to 2");
+  @Test
+  void testBoardHas90Tiles() throws Exception {
+    Board board = new Board();
+    Field field = Board.class.getDeclaredField("tiles");
+    field.setAccessible(true);
+    Tile[] tiles = (Tile[]) field.get(board);
+    assertEquals(90, tiles.length);
   }
 
   @Test
-  void testLadderMove() {
-    Board board = new Board(30);
-
-    int currentSquare = 1;
-    int diceRoll = 2;
-    int expected = 12; // Ladder from 3 to 12
-    int result = board.movePlayer(currentSquare, diceRoll);
-
-    assertEquals(expected, result, "Piece should move from square 3 to 12 due to ladder");
+  void testTileIds() throws Exception {
+    Board board = new Board();
+    Field field = Board.class.getDeclaredField("tiles");
+    field.setAccessible(true);
+    Tile[] tiles = (Tile[]) field.get(board);
+    for (int i = 0; i < tiles.length; i++) {
+      assertEquals(i + 1, tiles[i].getTileId());
+    }
   }
 
   @Test
-  void testSnakeMove() {
-    Board board = new Board(30);
+  void testLadderAndSnakeActions() throws Exception {
+    Board board = new Board();
+    Field field = Board.class.getDeclaredField("tiles");
+    field.setAccessible(true);
+    Tile[] tiles = (Tile[]) field.get(board);
 
-    int currentSquare = 10;
-    int diceRoll = 5;
-    int expected = 1; // Snake from 15 to 1.
-    int result = board.movePlayer(currentSquare, diceRoll);
+    // Ladder: tile 4 (index 3) should send the player to tile 14 (index 13)
+    Tile tile4 = tiles[3];
+    assertNotNull(tile4.getLandAction());
+    Player player = new Player("TestPlayer", tile4);
+    tile4.landPlayer(player);
+    assertEquals(14, player.getCurrentTile().getTileId());
 
-    assertEquals(expected, result, "Piece should slide from 15 to 1 due to the snake");
+    // Snake: tile 81 (index 80) should send the player to tile 64 (index 63)
+    Tile tile81 = tiles[80];
+    assertNotNull(tile81.getLandAction());
+    player.setCurrentTile(tile81);
+    tile81.landPlayer(player);
+    assertEquals(64, player.getCurrentTile().getTileId());
   }
 
   @Test
-  void testOvershootMove() {
-    Board board = new Board(30);
-
-    int currentSquare = 28;
-    int diceRoll = 4;
-    int expected = 28; // No move if overshooting the board.
-    int result = board.movePlayer(currentSquare, diceRoll);
-
-    assertEquals(expected, result, "Piece should remain on the same square if the move overshoots the board");
+  void testTileWithoutAction() throws Exception {
+    Board board = new Board();
+    Field field = Board.class.getDeclaredField("tiles");
+    field.setAccessible(true);
+    Tile[] tiles = (Tile[]) field.get(board);
+    // For example, tile 2 (index 1) should have no land action.
+    assertNull(tiles[1].getLandAction());
   }
 }
