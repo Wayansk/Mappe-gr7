@@ -3,9 +3,9 @@ package board;
 import gameplay.Player;
 
 /**
- * Moves a player to a new tile when they land on a ladder.
+ * Moves the player using the snake.
  */
-public class LadderAction implements TileAction {
+public class SnakeAction implements TileAction {
 
   private final int fromTileId;
   private final int toTileId;
@@ -18,7 +18,7 @@ public class LadderAction implements TileAction {
    * @param toTileId        the ID of the destination tile
    * @param destinationTile the {@link Tile} object representing the destination
    */
-  public LadderAction(int fromTileId, int toTileId, Tile destinationTile) {
+  public SnakeAction(int fromTileId, int toTileId, Tile destinationTile) {
     this.fromTileId = fromTileId;
     this.toTileId = toTileId;
     this.destinationTile = destinationTile;
@@ -32,7 +32,7 @@ public class LadderAction implements TileAction {
   @Override
   public void perform(Player player) {
     System.out.println(player.getNameOfPiece()
-        + " Found a ladder from " + fromTileId + " to " + toTileId);
+        + " Found a snake " + fromTileId + " to " + toTileId);
     player.setCurrentTile(destinationTile);
   }
 }

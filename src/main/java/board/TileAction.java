@@ -7,10 +7,10 @@ import gameplay.Player;
  */
 public interface TileAction {
 
-    /**
-     * Performs the action associated with a tile when a player lands on it.
-     *
-     * @param player The player on whom the action is performed.
-     */
-    void perform(Player player);
+  /**
+   * Performs the action associated with a tile when a player lands on it.
+   *
+   * @param player The player on whom the action is performed.
+   */
+  void perform(Player player);
 }

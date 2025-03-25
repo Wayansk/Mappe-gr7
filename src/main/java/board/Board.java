@@ -4,6 +4,7 @@ package board;
  * A simple game board with 90 tiles for Snakes and Ladders.
  */
 public class Board {
+
   private static final int SIZE = 90;
   private final Tile[] tiles;
 
@@ -19,10 +20,10 @@ public class Board {
     tiles[9].setLandAction(new LadderAction(10, 27, tiles[26]));
     tiles[28].setLandAction(new LadderAction(29, 57, tiles[56]));
 
-    // Snakes (using LadderAction as a placeholder)
-    tiles[80].setLandAction(new LadderAction(81, 64, tiles[63]));
-    tiles[50].setLandAction(new LadderAction(51, 32, tiles[31]));
-    tiles[15].setLandAction(new LadderAction(16, 2, tiles[3]));
+    // Snakes
+    tiles[80].setLandAction(new SnakeAction(81, 64, tiles[63]));
+    tiles[50].setLandAction(new SnakeAction(51, 32, tiles[31]));
+    tiles[15].setLandAction(new SnakeAction(16, 2, tiles[3]));
   }
 
   /**
@@ -35,11 +36,12 @@ public class Board {
   }
 
   /**
-   * Returns the tile of the index in tiles
+   * Returns the tile of the index in tiles.
+   *
    * @param index number to the tile in tiles
    * @return the index of the tile
    */
-  public Tile getTile(int index){
+  public Tile getTile(int index) {
     return tiles[index];
   }
 }
