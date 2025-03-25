@@ -44,13 +44,17 @@ public class BoardGame {
    */
   public void start() {
     Scanner scanner = new Scanner(System.in);
-    System.out.println("Enter number of players:");
     int numPlayers = 0;
-    while (numPlayers <= 0) {
+    boolean isValidNumberOfPlayers = false;
+
+    while (!isValidNumberOfPlayers) {
+      System.out.println("Enter number of players (1-5): ");
       try {
         numPlayers = Integer.parseInt(scanner.nextLine());
-        if (numPlayers <= 0) {
-          System.out.println("Please enter a positive number.");
+        if (numPlayers >= 1 && numPlayers <= 5) {
+          isValidNumberOfPlayers = true;
+        } else {
+          System.out.println("Please enter a number between 1 and 5.");
         }
       } catch (NumberFormatException e) {
         System.out.println("Invalid input. Please enter a number.");

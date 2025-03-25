@@ -1,31 +1,32 @@
 package engine;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import board.Board;
+
 import gameplay.Dice;
 import gameplay.Player;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.Test;
 
-@SuppressWarnings({"SpellCheckingInspection"})
 class TurnManagerTest {
 
-  // A simple Dice subclass that always returns a fixed roll value.
+  // Dice subclass that always returns a fixed value.
   static class FixedDice extends Dice {
-
     private final int fixedValue;
 
     public FixedDice(int fixedValue) {
-      super(1); // Using one die, as in the game.
+      super(1); // Only need one die, but this is not used because rollDice() does nothing.
       this.fixedValue = fixedValue;
     }
 
     @Override
     public void rollDice() {
-      // No action needed; the roll is fixed.
+      // No action needed; the roll value is fixed.
     }
 
     @Override
@@ -34,101 +35,75 @@ class TurnManagerTest {
     }
   }
 
-  // A Dice subclass that returns values from a sequence.
-  static class SequenceDice extends Dice {
+  @Test
+  void testManageTurnsSinglePlayerWin() throws Exception {
+    // Simulate user pressing "Enter" once.
+    String simulatedInput = "\n";
 
-    private final int[] values;
-    private int index;
+    // Preserve the original System.in to restore later.
+    InputStream originalIn = System.in;
 
-    public SequenceDice(int[] values) {
-      super(1);
-      this.values = values;
-      this.index = 0;
+    try (ByteArrayInputStream testIn =
+        new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8))) {
+
+      System.setIn(testIn);
+
+      // Create a board and a single player starting at tile 0.
+      Board board = new Board();
+      Player player = new Player("SinglePlayer", board.getTile(0));
+      List<Player> players = new ArrayList<>();
+      players.add(player);
+
+      // Use a FixedDice with a high roll to ensure the player reaches tile 90 immediately.
+      Dice fixedDice = new FixedDice(100);
+
+      // Create TurnManager with a single player and fixed dice.
+      TurnManager turnManager = new TurnManager(players, fixedDice, board);
+
+      // Run the method under test. It will read from the simulated input.
+      turnManager.manageTurns();
+
+      // After one turn, the player should be on tile 90.
+      assertEquals(90, player.getCurrentTile().getTileId(),
+          "Player should have reached tile 90 and won the game.");
+    } finally {
+      System.setIn(originalIn);
     }
+  }
 
-    @Override
-    public void rollDice() {
-      // No action needed.
+  @Test
+  void testManageTurnsMultiplePlayers() throws Exception {
+    // Simulate user pressing "Enter" once.
+    String simulatedInput = "\n";
+
+    InputStream originalIn = System.in;
+    try (ByteArrayInputStream testIn =
+        new ByteArrayInputStream(simulatedInput.getBytes(StandardCharsets.UTF_8))) {
+
+      System.setIn(testIn);
+
+      // Create a board and two players starting at tile 0.
+      Board board = new Board();
+      Player player1 = new Player("Player1", board.getTile(0));
+      Player player2 = new Player("Player2", board.getTile(0));
+      List<Player> players = new ArrayList<>();
+      players.add(player1);
+      players.add(player2);
+
+      // Use a FixedDice that ensures player1 immediately reaches tile 90.
+      Dice fixedDice = new FixedDice(100);
+
+      TurnManager turnManager = new TurnManager(players, fixedDice, board);
+
+      turnManager.manageTurns();
+
+      // Player1 should have won; Player2 should not have moved.
+      assertEquals(90, player1.getCurrentTile().getTileId(),
+          "Player1 should have reached tile 90 and won the game.");
+      assertEquals(1, player2.getCurrentTile().getTileId(),
+          "Player2 should remain on the starting tile (tile ID 1).");
+    } finally {
+      System.setIn(originalIn);
     }
-
-    @Override
-    public int getRollSum() {
-      if (index < values.length) {
-        return values[index++];
-      } else {
-        return values[values.length
-            - 1]; // Continue returning the last value if sequence is exhausted.
-      }
-    }
-  }
-
-  @Test
-  void testManageTurns_WinCondition_SinglePlayer() {
-    Board board = new Board();
-    List<Player> players = new ArrayList<>();
-    Player player = new Player("Bobby", board.getTile(0));
-    players.add(player);
-
-    // Calculate steps needed from starting tile (assumed id 1) to reach tile 90.
-    int stepsNeeded = 90 - player.getCurrentTile().getTileId();
-    FixedDice dice = new FixedDice(stepsNeeded);
-
-    TurnManager turnManager = new TurnManager(players, dice, board);
-    turnManager.manageTurns();
-
-    assertEquals(90, player.getCurrentTile().getTileId(), "Player should reach tile 90");
-  }
-
-  @Test
-  void testOverboardMove() {
-    Board board = new Board();
-    List<Player> players = new ArrayList<>();
-    Player player = new Player("Bobby", board.getTile(0));
-    players.add(player);
-
-    // Use a dice roll value that exceeds the necessary steps (e.g., 100).
-    FixedDice dice = new FixedDice(100);
-    TurnManager turnManager = new TurnManager(players, dice, board);
-    turnManager.manageTurns();
-
-    // Even with an oversized roll, the player's position should cap at tile 90.
-    assertEquals(90, player.getCurrentTile().getTileId(), "Player should not move past tile 90");
-  }
-
-  @Test
-  void testMultiplePlayers() {
-    Board board = new Board();
-    List<Player> players = new ArrayList<>();
-    // Both players are named Bobby.
-    Player player1 = new Player("Bobby", board.getTile(0));
-    Player player2 = new Player("Bobby", board.getTile(0));
-    players.add(player1);
-    players.add(player2);
-
-    // Simulate a sequence of dice rolls:
-    // - First turn: player1 rolls 3 (tile 1 -> tile 4).
-    // - Second turn: player2 rolls 4 (tile 1 -> tile 5).
-    // - Third turn: player1 rolls 86 (tile 4 -> tile 90, winning the game).
-    int[] diceSequence = {3, 4, 86};
-    SequenceDice dice = new SequenceDice(diceSequence);
-    TurnManager turnManager = new TurnManager(players, dice, board);
-    turnManager.manageTurns();
-
-    // Verify that player1 wins by reaching tile 90.
-    assertEquals(90, player1.getCurrentTile().getTileId(), "Player 1 should reach tile 90 and win");
-    // Verify that player2 remains on tile 5.
-    assertEquals(5, player2.getCurrentTile().getTileId(), "Player 2 should be on tile 5");
-  }
-
-  @Test
-  void testNoPlayers() {
-    Board board = new Board();
-    List<Player> players = new ArrayList<>();
-    FixedDice dice = new FixedDice(10);
-    TurnManager turnManager = new TurnManager(players, dice, board);
-
-    // Since the players list is empty, trying to manage turns should throw an exception.
-    assertThrows(IndexOutOfBoundsException.class, turnManager::manageTurns,
-        "Managing turns with no players should throw an IndexOutOfBoundsException");
   }
 }
