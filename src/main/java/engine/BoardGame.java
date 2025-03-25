@@ -8,8 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
- * This class creates the game with the players, and uses the turn-manager to have the game
- * running.
+ * This class creates the game with the players, and uses the turn-manager to have the game running.
  * It also creates the players on the correct square.
  */
 public class BoardGame {

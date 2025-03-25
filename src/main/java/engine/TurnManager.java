@@ -5,6 +5,7 @@ import board.Tile;
 import gameplay.Dice;
 import gameplay.Player;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  * This class handles the turns of each player and their movement.
@@ -36,11 +37,15 @@ public class TurnManager {
    * tile (tile 90).
    */
   public void manageTurns() {
+    Scanner scanner = new Scanner(System.in);
     int currentPlayerIndex = 0;
+    System.out.println("\nPress enter to roll the die.");
 
     while (!gameOver) {
       Player currentPlayer = players.get(currentPlayerIndex);
       System.out.println("\n" + currentPlayer.getNameOfPiece() + "'s turn:");
+
+      scanner.nextLine();
 
       // Player rolls the dice.
       dice.rollDice();
@@ -64,6 +69,7 @@ public class TurnManager {
 
       // Trigger any action associated with landing on the tile
       newTile.landPlayer(currentPlayer);
+      System.out.println("\n-------------------------");
 
       // Check win condition.
       if (newTile.getTileId() == 90) {
@@ -74,5 +80,6 @@ public class TurnManager {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
       }
     }
+    scanner.close();
   }
 }
