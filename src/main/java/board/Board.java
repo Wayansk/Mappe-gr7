@@ -1,47 +1,66 @@
 package board;
 
+import com.google.gson.Gson;
+import exceptions.BoardResourceNotFoundException;
+import json_util.BoardDefinition;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+
 /**
  * A simple game board with 90 tiles for Snakes and Ladders.
  */
 public class Board {
 
-  private static final int SIZE = 90;
   private final Tile[] tiles;
 
   /**
    * Creates the board, initializes 90 tiles, and sets up ladder and snake actions.
    */
   public Board() {
-    tiles = new Tile[SIZE];
-    initializeBoard();
+    InputStream inputStream = getClass().getResourceAsStream("/json_boards/Board_1.json");
+    if (inputStream == null) {
+      throw new BoardResourceNotFoundException("Could not find the board (Board_1.json) in resources");
+    }
 
-    // Ladders
-    tiles[3].setLandAction(new LadderAction(4, 14, tiles[13]));
-    tiles[9].setLandAction(new LadderAction(10, 27, tiles[26]));
-    tiles[28].setLandAction(new LadderAction(29, 57, tiles[56]));
+    // Parse JSON
+    Gson gson = new Gson();
+    BoardDefinition boardDef = gson.fromJson(
+        new InputStreamReader(inputStream, StandardCharsets.UTF_8),
+        BoardDefinition.class
+    );
 
-    // Snakes
-    tiles[80].setLandAction(new SnakeAction(81, 64, tiles[63]));
-    tiles[50].setLandAction(new SnakeAction(51, 32, tiles[31]));
-    tiles[15].setLandAction(new SnakeAction(16, 2, tiles[3]));
-  }
-
-  /**
-   * Initializes the board with tiles numbered 1 to 90.
-   */
-  private void initializeBoard() {
-    for (int i = 0; i < SIZE; i++) {
+    // build the tiles
+    int size = boardDef.getSize();
+    tiles = new Tile[size];
+    for (int i = 0; i < size; i++) {
       tiles[i] = new Tile(i + 1);
     }
+
+    // add LadderAction
+    boardDef.getLadders().forEach(ladder -> {
+      int fromIndex = ladder.getFrom() - 1;
+      int toIndex = ladder.getTo() - 1;
+      tiles[fromIndex].setLandAction(
+          new LadderAction(ladder.getFrom(), ladder.getTo(), tiles[toIndex])
+      );
+    });
+
+    // add SnakeAction
+    boardDef.getSnakes().forEach(snake -> {
+      int fromIndex = snake.getFrom() - 1;
+      int toIndex = snake.getTo() - 1;
+      tiles[fromIndex].setLandAction(
+          new SnakeAction(snake.getFrom(), snake.getTo(), tiles[toIndex])
+      );
+    });
   }
 
-  /**
-   * Returns the tile of the index in tiles.
-   *
-   * @param index number to the tile in tiles
-   * @return the index of the tile
-   */
   public Tile getTile(int index) {
+    if (index < 0 || index >= tiles.length) {
+      throw new IndexOutOfBoundsException("Tile index out of range: " + index);
+    }
     return tiles[index];
   }
 }
