@@ -5,81 +5,92 @@ import board.Tile;
 import gameplay.Dice;
 import gameplay.Player;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Optional;
 
 /**
- * This class handles the turns of each player and their movement.
+ * Handles the logic for turn-based gameplay. Manages whose turn it is, rolls dice, moves players,
+ * and checks for victory.
  */
 public class TurnManager {
 
   private final List<Player> players;
   private final Dice dice;
   private final Board board;
-  private boolean gameOver;
+  private int currentPlayerIndex = 0;
+  private boolean gameOver = false;
 
   /**
-   * Constructs a TurnManager with the provided list of players, dice, and board.
+   * Creates a new TurnManager.
    *
-   * @param players the list of players participating in the game
-   * @param dice    the Dice object to be used for each turn
+   * @param players the list of players
+   * @param dice    the dice object to use
    * @param board   the game board
    */
   public TurnManager(List<Player> players, Dice dice, Board board) {
     this.players = players;
     this.dice = dice;
     this.board = board;
-    this.gameOver = false;
   }
 
   /**
-   * Manages the turn-based gameplay loop. Each player takes a turn to roll the dice, move along the
-   * board, and trigger any tile-specific actions. The loop ends when a player reaches the final
-   * tile (tile 90).
+   * Plays a single turn and returns the result.
+   *
+   * @return Returns a TurnResult if the game is running, or empty if it's over.
    */
-  public void manageTurns() {
-    Scanner scanner = new Scanner(System.in);
-    int currentPlayerIndex = 0;
-    System.out.println("\nPress enter to roll the die.");
-
-    while (!gameOver) {
-      Player currentPlayer = players.get(currentPlayerIndex);
-      System.out.println("\n" + currentPlayer.getNameOfPiece() + "'s turn:");
-
-      scanner.nextLine();
-
-      // Player rolls the dice.
-      dice.rollDice();
-      int moveSteps = dice.getRollSum();
-      System.out.println(currentPlayer.getNameOfPiece() + " rolled: " + moveSteps);
-
-      // Calculate the new tile number
-      Tile currentTile = currentPlayer.getCurrentTile();
-      int currentTileId = currentTile.getTileId();
-      int newTileId = currentTileId + moveSteps;
-
-      // sets 90 as max
-      if (newTileId > 90) {
-        newTileId = 90;
-      }
-
-      // Retrieve the new tile from the board.
-      Tile newTile = board.getTile(newTileId - 1);
-      currentPlayer.setCurrentTile(newTile);
-      System.out.println(currentPlayer.getNameOfPiece() + " moved to tile " + newTile.getTileId());
-
-      // Trigger any action associated with landing on the tile
-      newTile.landPlayer(currentPlayer);
-      System.out.println("\n-------------------------");
-
-      // Check win condition.
-      if (newTile.getTileId() == 90) {
-        System.out.println("\n" + currentPlayer.getNameOfPiece() + " has won the game!");
-        gameOver = true;
-      } else {
-        // Proceed to the next player.
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-      }
+  public Optional<TurnResult> playTurn() {
+    if (gameOver || players.isEmpty()) {
+      return Optional.empty();
     }
-    scanner.close();
+
+    Player currentPlayer = players.get(currentPlayerIndex);
+    dice.rollDice();
+    int steps = dice.getRollSum();
+
+    Tile currentTile = currentPlayer.getCurrentTile();
+    int newTileId = Math.min(currentTile.getTileId() + steps, board.getTileCount());
+    Tile newTile = board.getTile(newTileId - 1);
+
+    currentPlayer.setCurrentTile(newTile);
+    newTile.landPlayer(currentPlayer);
+
+    boolean hasWon = newTile.getTileId() == board.getTileCount();
+    if (hasWon) {
+      gameOver = true;
+    }
+
+    TurnResult result = new TurnResult(currentPlayer, steps, newTile.getTileId(), hasWon);
+
+    if (!hasWon) {
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
+
+    return Optional.of(result);
+  }
+
+  /**
+   * Returns the current player.
+   *
+   * @return the player whose turn it is
+   */
+  public Player getCurrentPlayer() {
+    return players.get(currentPlayerIndex);
+  }
+
+  /**
+   * Returns whether the game is over.
+   *
+   * @return true if someone has won, false otherwise
+   */
+  public boolean isGameOver() {
+    return gameOver;
+  }
+
+  /**
+   * Returns an unmodifiable list of players.
+   *
+   * @return the players in the game
+   */
+  public List<Player> getPlayers() {
+    return List.copyOf(players);
   }
 }

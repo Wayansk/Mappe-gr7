@@ -15,7 +15,7 @@ public class GameMain {
    */
   public static void main(String[] args) {
     BoardGame boardGame = new BoardGame();
-    boardGame.start();
+    // boardGame.start(); Commented out since there is no use for it now, but later
   }
 
 }

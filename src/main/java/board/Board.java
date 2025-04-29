@@ -2,26 +2,27 @@ package board;
 
 import com.google.gson.Gson;
 import exceptions.BoardResourceNotFoundException;
-import json_util.BoardDefinition;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import json_util.BoardDefinition;
 
 /**
- * A simple game board with 90 tiles for Snakes and Ladders.
+ * Represents a Snakes and Ladders game board. Loads the board structure from a JSON file.
  */
 public class Board {
 
   private final Tile[] tiles;
 
   /**
-   * Creates the board, initializes 90 tiles, and sets up ladder and snake actions.
+   * Creates a Board by loading tile and action data from a JSON resource. Sets up all normal tiles,
+   * ladders, and snakes.
    */
   public Board() {
     InputStream inputStream = getClass().getResourceAsStream("/json_boards/Board_1.json");
     if (inputStream == null) {
-      throw new BoardResourceNotFoundException("Could not find the board (Board_1.json) in resources");
+      throw new BoardResourceNotFoundException(
+          "Could not find the board (Board_1.json) in resources");
     }
 
     // Parse JSON
@@ -31,14 +32,14 @@ public class Board {
         BoardDefinition.class
     );
 
-    // build the tiles
+    // Build the tiles
     int size = boardDef.getSize();
     tiles = new Tile[size];
     for (int i = 0; i < size; i++) {
       tiles[i] = new Tile(i + 1);
     }
 
-    // add LadderAction
+    // Add LadderActions
     boardDef.getLadders().forEach(ladder -> {
       int fromIndex = ladder.getFrom() - 1;
       int toIndex = ladder.getTo() - 1;
@@ -47,7 +48,7 @@ public class Board {
       );
     });
 
-    // add SnakeAction
+    // Add SnakeActions
     boardDef.getSnakes().forEach(snake -> {
       int fromIndex = snake.getFrom() - 1;
       int toIndex = snake.getTo() - 1;
@@ -57,10 +58,26 @@ public class Board {
     });
   }
 
+  /**
+   * Returns the tile at the given index.
+   *
+   * @param index zero-based tile index
+   * @return the Tile at the specified index
+   * @throws IndexOutOfBoundsException if index is out of range
+   */
   public Tile getTile(int index) {
     if (index < 0 || index >= tiles.length) {
       throw new IndexOutOfBoundsException("Tile index out of range: " + index);
     }
     return tiles[index];
+  }
+
+  /**
+   * Returns the total number of tiles on the board.
+   *
+   * @return the number of tiles
+   */
+  public int getTileCount() {
+    return tiles.length;
   }
 }

@@ -5,67 +5,81 @@ import gameplay.Dice;
 import gameplay.Player;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Optional;
 
 /**
- * This class creates the game with the players, and uses the turn-manager to have the game running.
- * It also creates the players on the correct square.
+ * Coordinates the setup and control of the board game. Holds references to the board, players, and
+ * turn manager.
  */
 public class BoardGame {
 
   private final Board board;
   private final List<Player> players;
-  private final engine.TurnManager turnManager;
+  private final TurnManager turnManager;
 
   /**
-   * Constructs a BoardGame by initializing the board, dice, and an empty player list. It also
-   * creates a TurnManager to handle turn-based gameplay.
+   * Creates a new BoardGame instance. Initializes board, dice, and an empty player list.
    */
   public BoardGame() {
-    board = new Board();
-    Dice dice = new Dice(1); // Using one die for classic Snakes and Ladders.
-    players = new ArrayList<>();
-    turnManager = new engine.TurnManager(players, dice, board);
+    this.board = new Board();
+    this.players = new ArrayList<>();
+    this.turnManager = new TurnManager(players, new Dice(1), board);
   }
 
   /**
-   * Adds a new player to the game. Players start on the first tile
+   * Adds a new player to the game.
    *
-   * @param name the name of the player
+   * @param name the player's name
    */
   public void addPlayer(String name) {
-    Player player = new Player(name, board.getTile(0));
-    players.add(player);
+    if (name == null || name.isBlank()) {
+      throw new IllegalArgumentException("Name cannot be blank");
+    }
+    players.add(new Player(name, board.getTile(0)));
   }
 
   /**
-   * Starts the game by prompting the user for the number of players and their names, then
-   * initiating the turn-based gameplay loop.
+   * Plays the next turn in the game.
+   *
+   * @return an Optional TurnResult describing the outcome of the turn
    */
-  public void start() {
-    Scanner scanner = new Scanner(System.in);
-    int numPlayers = 0;
-    boolean isValidNumberOfPlayers = false;
+  public Optional<TurnResult> playNextTurn() {
+    return turnManager.playTurn();
+  }
 
-    while (!isValidNumberOfPlayers) {
-      System.out.println("Enter number of players (1-5): ");
-      try {
-        numPlayers = Integer.parseInt(scanner.nextLine());
-        if (numPlayers >= 1 && numPlayers <= 5) {
-          isValidNumberOfPlayers = true;
-        } else {
-          System.out.println("Please enter a number between 1 and 5.");
-        }
-      } catch (NumberFormatException e) {
-        System.out.println("Invalid input. Please enter a number.");
-      }
-    }
-    for (int i = 1; i <= numPlayers; i++) {
-      System.out.println("Enter name for player " + i + ":");
-      String name = scanner.nextLine();
-      addPlayer(name);
-    }
-    // TurnManager to handle the gameplay.
-    turnManager.manageTurns();
+  /**
+   * Returns the current player.
+   *
+   * @return the player whose turn it is
+   */
+  public Player getCurrentPlayer() {
+    return turnManager.getCurrentPlayer();
+  }
+
+  /**
+   * Returns an unmodifiable list of all players.
+   *
+   * @return the list of players
+   */
+  public List<Player> getPlayers() {
+    return turnManager.getPlayers();
+  }
+
+  /**
+   * Checks if the game has ended.
+   *
+   * @return true if a player has won, false otherwise
+   */
+  public boolean isGameOver() {
+    return turnManager.isGameOver();
+  }
+
+  /**
+   * Gets the game board.
+   *
+   * @return the board instance
+   */
+  public Board getBoard() {
+    return board;
   }
 }
