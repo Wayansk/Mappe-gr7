@@ -2,10 +2,12 @@ package engine;
 
 import board.Board;
 import board.Tile;
+import board.TileAction;
+import frontend.observer.BoardGameObserver;
 import gameplay.Dice;
 import gameplay.Player;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 /**
  * Handles the logic for turn-based gameplay. Manages whose turn it is, rolls dice, moves players,
@@ -13,9 +15,11 @@ import java.util.Optional;
  */
 public class TurnManager {
 
-  private final List<Player> players;
-  private final Dice dice;
   private final Board board;
+  private final Dice dice;
+  private final List<Player> players;
+  private final List<BoardGameObserver> observers = new ArrayList<>();
+
   private int currentPlayerIndex = 0;
   private boolean gameOver = false;
 
@@ -33,38 +37,12 @@ public class TurnManager {
   }
 
   /**
-   * Plays a single turn and returns the result.
+   * Returns an unmodifiable list of players.
    *
-   * @return Returns a TurnResult if the game is running, or empty if it's over.
+   * @return the players in the game
    */
-  public Optional<TurnResult> playTurn() {
-    if (gameOver || players.isEmpty()) {
-      return Optional.empty();
-    }
-
-    Player currentPlayer = players.get(currentPlayerIndex);
-    dice.rollDice();
-    int steps = dice.getRollSum();
-
-    Tile currentTile = currentPlayer.getCurrentTile();
-    int newTileId = Math.min(currentTile.getTileId() + steps, board.getTileCount());
-    Tile newTile = board.getTile(newTileId - 1);
-
-    currentPlayer.setCurrentTile(newTile);
-    newTile.landPlayer(currentPlayer);
-
-    boolean hasWon = newTile.getTileId() == board.getTileCount();
-    if (hasWon) {
-      gameOver = true;
-    }
-
-    TurnResult result = new TurnResult(currentPlayer, steps, newTile.getTileId(), hasWon);
-
-    if (!hasWon) {
-      currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
-    }
-
-    return Optional.of(result);
+  public List<Player> getPlayers() {
+    return List.copyOf(players);
   }
 
   /**
@@ -85,12 +63,54 @@ public class TurnManager {
     return gameOver;
   }
 
+  public void addObserver(BoardGameObserver boardGameObserver) {
+    observers.add(boardGameObserver);
+  }
+
+  private void notifyObservers() {
+    for (BoardGameObserver observer : observers) {
+      observer.update();
+    }
+  }
+
   /**
-   * Returns an unmodifiable list of players.
+   * Plays a single turn and returns the result.
    *
-   * @return the players in the game
+   * @return Returns a TurnResult if the game is running, or empty if it's over.
    */
-  public List<Player> getPlayers() {
-    return List.copyOf(players);
+  public Optional<TurnResult> playTurn() {
+    if (gameOver || players.isEmpty()) {
+      return Optional.empty();
+    }
+
+    dice.rollDice();
+    int rolled = dice.getRollSum();
+
+    Player currentPlayer = players.get(currentPlayerIndex);
+    int fromId = currentPlayer.getCurrentTile().getTileId();
+    int toId = Math.min(fromId + rolled, board.getTileCount());
+    Tile newTile = board.getTile(toId - 1);
+
+    currentPlayer.setCurrentTile(newTile);
+
+    TileAction tileAction = newTile.getLandAction();
+    if (tileAction != null) {
+      tileAction.perform(currentPlayer);
+    }
+
+    boolean hasWon = currentPlayer.getCurrentTile().getTileId() == board.getTileCount();
+    if (hasWon) {
+      gameOver = true;
+    } else {
+      currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
+    }
+
+    notifyObservers();
+    return Optional.of(new TurnResult(
+        currentPlayer,
+        rolled,
+        currentPlayer.getCurrentTile().getTileId(),
+        hasWon
+    ));
   }
 }
