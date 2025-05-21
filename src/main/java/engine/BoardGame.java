@@ -1,6 +1,7 @@
 package engine;
 
 import board.Board;
+import frontend.observer.BoardGameObserver;
 import gameplay.Dice;
 import gameplay.Player;
 import java.util.ArrayList;
@@ -81,5 +82,9 @@ public class BoardGame {
    */
   public Board getBoard() {
     return board;
+  }
+
+  public void addObserver(BoardGameObserver boardGameObserver) {
+    turnManager.addObserver(boardGameObserver);
   }
 }
