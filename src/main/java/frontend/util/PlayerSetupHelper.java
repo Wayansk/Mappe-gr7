@@ -11,12 +11,12 @@ public class PlayerSetupHelper {
 
   private PlayerSetupHelper() {}
 
-  public static int askPlayerCount() {
-    ChoiceDialog<Integer> playerCountDialog = new ChoiceDialog<>(2, 2, 3, 4);
+  public static Optional<Integer> askPlayerCount() {
+    ChoiceDialog<Integer> playerCountDialog = new ChoiceDialog<>(2, 2, 3, 4, 5);
     playerCountDialog.setTitle("Player Count");
-    playerCountDialog.setHeaderText("How many players? (2-4)");
+    playerCountDialog.setHeaderText("How many players? (2-5)");
     Optional<Integer> choice = playerCountDialog.showAndWait();
-    return choice.filter(n -> n >= 2 && n <= 4).orElse(2);
+    return choice.filter(n -> n >= 2 && n <= 5);
   }
 
   public static List<String> collectPlayerNames(int count) {
