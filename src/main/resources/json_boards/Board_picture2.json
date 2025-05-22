@@ -1,0 +1,19 @@
+{
+  "size": 42,
+  "rows": 7,
+  "cols": 6,
+  "ladders": [
+    { "from": 2, "to": 15 },
+    { "from": 7, "to": 28 },
+    { "from": 14, "to": 27 },
+    { "from": 19, "to": 32 },
+    { "from": 25, "to": 38 }
+  ],
+  "snakes": [
+    { "from": 10, "to": 6 },
+    { "from": 13, "to": 3 },
+    { "from": 30, "to": 9 },
+    { "from": 35, "to": 21 },
+    { "from": 41, "to": 24 }
+  ]
+}
