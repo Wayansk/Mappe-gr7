@@ -18,11 +18,15 @@ public class BoardGame {
   private final List<Player> players;
   private final TurnManager turnManager;
 
+  public BoardGame() {
+    this("/json_boards/Board_1.json");
+  }
+
   /**
    * Creates a new BoardGame instance. Initializes board, dice, and an empty player list.
    */
-  public BoardGame() {
-    this.board = new Board();
+  public BoardGame(String boardJsonResource) {
+    this.board = new Board(boardJsonResource);
     this.players = new ArrayList<>();
     this.turnManager = new TurnManager(players, new Dice(1), board);
   }
