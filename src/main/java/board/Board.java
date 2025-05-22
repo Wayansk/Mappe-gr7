@@ -1,61 +1,68 @@
 package board;
 
 import com.google.gson.Gson;
+import exceptions.BoardIndexOutOfBoundsException;
 import exceptions.BoardResourceNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
 import json_util.BoardDefinition;
+import json_util.Jump;
 
 /**
  * Represents a Snakes and Ladders game board. Loads the board structure from a JSON file.
  */
 public class Board {
 
-  private final Tile[] tiles;
+  private final List<Tile> tiles;
+  private final int size;
+  private final int rows;
+  private final int cols;
 
   /**
    * Creates a Board by loading tile and action data from a JSON resource. Sets up all normal tiles,
    * ladders, and snakes.
    */
-  public Board() {
-    InputStream inputStream = getClass().getResourceAsStream("/json_boards/Board_1.json");
-    if (inputStream == null) {
-      throw new BoardResourceNotFoundException(
-          "Could not find the board (Board_1.json) in resources");
-    }
-
-    // Parse JSON
-    Gson gson = new Gson();
-    BoardDefinition boardDef = gson.fromJson(
-        new InputStreamReader(inputStream, StandardCharsets.UTF_8),
-        BoardDefinition.class
-    );
+  public Board(String resourcePath) {
+    BoardDefinition boardDefinition = loadDefinition(resourcePath);
+    this.size = boardDefinition.getSize();
+    this.rows = boardDefinition.getRows();
+    this.cols = boardDefinition.getCols();
 
     // Build the tiles
-    int size = boardDef.getSize();
-    tiles = new Tile[size];
-    for (int i = 0; i < size; i++) {
-      tiles[i] = new Tile(i + 1);
+    this.tiles = new ArrayList<>(size);
+    for (int i = 1; i <= size; i++) {
+      tiles.add(new Tile(i));
     }
 
     // Add LadderActions
-    boardDef.getLadders().forEach(ladder -> {
-      int fromIndex = ladder.getFrom() - 1;
-      int toIndex = ladder.getTo() - 1;
-      tiles[fromIndex].setLandAction(
-          new LadderAction(ladder.getFrom(), ladder.getTo(), tiles[toIndex])
-      );
-    });
+    for (Jump jumpLadder : boardDefinition.getLadders()) {
+      Tile jumpFromTile = tiles.get(jumpLadder.getFrom() - 1);
+      Tile jumpToTile = tiles.get(jumpLadder.getTo() - 1);
+      jumpFromTile.setLandAction(new LadderAction(jumpLadder.getFrom(), jumpLadder.getTo(), jumpToTile));
+    }
 
     // Add SnakeActions
-    boardDef.getSnakes().forEach(snake -> {
-      int fromIndex = snake.getFrom() - 1;
-      int toIndex = snake.getTo() - 1;
-      tiles[fromIndex].setLandAction(
-          new SnakeAction(snake.getFrom(), snake.getTo(), tiles[toIndex])
-      );
-    });
+    for (Jump jumpSnake : boardDefinition.getSnakes()) {
+      Tile jumpFromTile = tiles.get(jumpSnake.getFrom() - 1);
+      Tile jumpToTile = tiles.get(jumpSnake.getTo() - 1);
+      jumpFromTile.setLandAction(new SnakeAction(jumpSnake.getFrom(), jumpSnake.getTo(), jumpToTile));
+    }
+  }
+
+  private BoardDefinition loadDefinition(String resourcePath) {
+    InputStream inputStream = getClass().getResourceAsStream(resourcePath);
+    if (inputStream == null) {
+      throw new BoardResourceNotFoundException("Could not find JSON board: " + resourcePath);
+    }
+    try (InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8)) {
+      return new Gson().fromJson(inputStreamReader, BoardDefinition.class);
+    } catch (Exception e) {
+      throw new BoardResourceNotFoundException("Error parsing JSON board: " + resourcePath, e);
+    }
   }
 
   /**
@@ -66,10 +73,10 @@ public class Board {
    * @throws IndexOutOfBoundsException if index is out of range
    */
   public Tile getTile(int index) {
-    if (index < 0 || index >= tiles.length) {
-      throw new IndexOutOfBoundsException("Tile index out of range: " + index);
+    if (index < 0 || index >= size) {
+      throw new BoardIndexOutOfBoundsException(index, size);
     }
-    return tiles[index];
+    return tiles.get(index);
   }
 
   /**
@@ -78,6 +85,14 @@ public class Board {
    * @return the number of tiles
    */
   public int getTileCount() {
-    return tiles.length;
+    return size;
+  }
+
+  public int getRows() {
+    return rows;
+  }
+
+  public int getCols() {
+    return cols;
   }
 }

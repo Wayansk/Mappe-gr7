@@ -4,16 +4,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import board.*;
 import engine.BoardGame;
 import frontend.observer.BoardGameObserver;
 import gameplay.Player;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -23,51 +20,40 @@ import javafx.scene.shape.Rectangle;
  */
 public class GameBoardView implements BoardGameObserver {
 
-  private static final int ROWS = 9;
-  private static final int COLS = 10;
-  private static final int TILE_SIZE = 60;
-  private static final int TOKEN_RADIUS = 15;
+  private static final int TOKEN_SIZE = 15;
 
   private final BoardGame boardGame;
+  private final int numberOfRows;
+  private final int numberOfColumns;
+  private final double tileWidth;
+  private final double tileHeight;
+  private final double tokenRadius;
+
   private final GridPane boardGrid;
   private final Map<Integer, StackPane> tileMap = new HashMap<>();
   private final Map<Player, Circle> playerIcons = new HashMap<>();
 
+
+  public GameBoardView(BoardGame boardGame) {
+    this(boardGame, 60, 60);
+  }
+
   /**
    * Creates a new GameBoardView.
    */
-  public GameBoardView(BoardGame boardGame) {
+  public GameBoardView(BoardGame boardGame, double tileWidth, double tileHeight) {
     this.boardGame = boardGame;
+    this.numberOfRows = boardGame.getBoard().getRows();
+    this.numberOfColumns = boardGame.getBoard().getCols();
+    this.tileWidth = tileWidth;
+    this.tileHeight = tileHeight;
+    this.tokenRadius = TOKEN_SIZE;
+
     this.boardGrid = buildGrid();
+    initPlayerTokens();
 
-    List<String> colors = List.of("red", "blue", "green", "orange");
-    var players = boardGame.getPlayers();
-    for (int i = 0; i < players.size(); i++) {
-      Player player = players.get(i);
-      Circle token = new Circle(TOKEN_RADIUS, Color.web(colors.get(i)));
-      playerIcons.put(player, token);
-
-      int tileId = player.getCurrentTile().getTileId();
-      tileMap.get(tileId).getChildren().add(token);
-    }
-  }
-
-  /**
-   * Returns the GridPane representing the game board.
-   *
-   * @return the board grid
-   */
-  public GridPane getBoardGrid() {
-    return boardGrid;
-  }
-
-  /**
-   * Returns the map of tile numbers to StackPanes.
-   *
-   * @return tile map
-   */
-  public Map<Integer, StackPane> getTileMap() {
-    return tileMap;
+    boardGame.addObserver(this);
+    update();
   }
 
   /**
@@ -79,51 +65,70 @@ public class GameBoardView implements BoardGameObserver {
     GridPane grid = new GridPane();
     grid.setGridLinesVisible(true);
 
+    for (int colIndex = 0; colIndex < numberOfColumns; colIndex++) {
+      ColumnConstraints columnConstraints = new ColumnConstraints(tileWidth, tileWidth, tileWidth);
+      columnConstraints.setHgrow(Priority.NEVER);
+      grid.getColumnConstraints().add(columnConstraints);
+    }
+    for (int rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
+      RowConstraints rowConstraints = new RowConstraints(tileHeight, tileHeight, tileHeight);
+      rowConstraints.setVgrow(Priority.NEVER);
+      grid.getRowConstraints().add(rowConstraints);
+    }
+    grid.setPrefSize(tileWidth * numberOfColumns, tileHeight * numberOfRows);
+
     int tileNumber = 1;
-
-    Board board = boardGame.getBoard();
-    for (int row = 0; row < ROWS; row++) {
-      for (int col = 0; col < COLS; col++, tileNumber++) {
+    for (int rowIndex = 0; rowIndex < numberOfRows; rowIndex++) {
+      for (int columnIndex = 0; columnIndex < numberOfColumns; columnIndex++) {
         StackPane cell = new StackPane();
-        cell.setPrefSize(TILE_SIZE, TILE_SIZE);
+        cell.setPrefSize(tileWidth, tileHeight);
 
-        Tile tile = board.getTile(tileNumber - 1);
-        Rectangle rect = new Rectangle(TILE_SIZE, TILE_SIZE);
-        rect.setStroke(Color.BLACK);
+        Rectangle background = new Rectangle(tileWidth, tileHeight);
+        background.setStroke(Color.BLACK);
+        background.setFill(Color.TRANSPARENT);
+        cell.getChildren().add(background);
 
-        TileAction tileAction = tile.getLandAction();
-        if (tileAction instanceof LadderAction) {
-          rect.setFill(Color.BROWN);
-        } else if (tileAction instanceof SnakeAction) {
-          rect.setFill(Color.GREEN);
-        } else {
-          rect.setFill(Color.LIGHTGRAY);
-        }
-        cell.getChildren().add(rect);
+        Label tileNumberLabel = new Label(String.valueOf(tileNumber));
+        tileNumberLabel.getStyleClass().add("tile-number");
+        StackPane.setAlignment(tileNumberLabel, Pos.TOP_LEFT);
+        cell.getChildren().add(tileNumberLabel);
 
-        Label labelTileNumber = new Label(String.valueOf(tileNumber));
-        labelTileNumber.getStyleClass().add("tile-number");
-        StackPane.setAlignment(labelTileNumber, Pos.TOP_LEFT);
-        cell.getChildren().add(labelTileNumber);
+        int displayRow = numberOfRows - 1 - rowIndex;
+        int displayColumn = (rowIndex % 2 == 0) ? columnIndex : numberOfColumns - 1 - columnIndex;
+        grid.add(cell, displayColumn, displayRow);
 
-        int displayRow = ROWS - 1 - row;
-        int displayCol = (row % 2 == 0) ? col : COLS - 1 - col;
-        grid.add(cell, displayCol, displayRow);
         tileMap.put(tileNumber, cell);
+        tileNumber++;
       }
     }
     return grid;
   }
 
+  private void initPlayerTokens() {
+    List<String> colors = List.of("red", "blue", "green", "orange", "purple");
+    List<Player> players = boardGame.getPlayers();
+
+    for (int playerIndex = 0; playerIndex < players.size(); playerIndex++) {
+      Player player = players.get(playerIndex);
+      Circle token = new Circle(tokenRadius, Color.web(colors.get(playerIndex % colors.size())));
+      playerIcons.put(player, token);
+    }
+  }
+
   @Override
   public void update() {
-    tileMap.values().forEach(stack ->
-        stack.getChildren().removeIf(Circle.class::isInstance)
+    tileMap.values().forEach(cell ->
+        cell.getChildren().removeIf(Circle.class::isInstance)
     );
 
     playerIcons.forEach((player, token) -> {
-      int id = player.getCurrentTile().getTileId();
-      tileMap.get(id).getChildren().add(token);
+      int tileId = player.getCurrentTile().getTileId();
+      StackPane cell = tileMap.get(tileId);
+      if (cell != null) {
+        cell.getChildren().add(token);
+      } else {
+        System.err.println("[GameBoardViw] Warning: no cell mapped for tileId=" + tileId);
+      }
     });
   }
 
@@ -141,5 +146,23 @@ public class GameBoardView implements BoardGameObserver {
       statusPane.getChildren().add(label);
     }
     return statusPane;
+  }
+
+  /**
+   * Returns the GridPane representing the game board.
+   *
+   * @return the board grid
+   */
+  public GridPane getBoardGrid() {
+    return boardGrid;
+  }
+
+
+  public int getRows() {
+    return numberOfRows;
+  }
+
+  public int getCols() {
+    return numberOfColumns;
   }
 }
