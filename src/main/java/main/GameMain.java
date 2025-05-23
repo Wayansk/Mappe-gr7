@@ -1,6 +1,6 @@
 package main;
 
-import engine.BoardGame;
+import snakesandladders.engine.BoardGame;
 
 /**
  * Class that starts the application.
