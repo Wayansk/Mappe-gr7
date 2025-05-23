@@ -19,7 +19,7 @@ public class LauncherApp extends Application {
       root.getChildren().add(button);
     }
     primaryStage.setScene(new Scene(root));
-    primaryStage.setTitle("Choose what game to play");
+    primaryStage.setTitle("Choose game");
     primaryStage.show();
   }
 
