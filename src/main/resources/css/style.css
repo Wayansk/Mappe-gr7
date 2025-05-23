@@ -1,0 +1,17 @@
+.root {
+    -fx-font-family: "Arial", sans-serif;
+}
+
+.tile-number {
+    -fx-font-size: 10px;
+    -fx-text-fill: black;
+    -fx-padding: 2px;
+}
+
+.button {
+    -fx-font-size: 14px;
+}
+
+.label {
+    -fx-font-size: 14px;
+}

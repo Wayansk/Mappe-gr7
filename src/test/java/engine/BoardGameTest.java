@@ -1,113 +1,85 @@
 package engine;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
-
-import gameplay.Player;
-import java.lang.reflect.Field;
-import java.util.List;
+import snakesandladders.engine.BoardGame;
+import snakesandladders.engine.TurnResult;
+import snakesandladders.gameplay.Player;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 class BoardGameTest {
 
-  @SuppressWarnings("unchecked")
-  @Test
-  void testBoardGameConstructor() {
-    BoardGame game = new BoardGame();
+  private BoardGame boardGame;
 
-    // Basic checks via reflection
-    try {
-      Field playersField = BoardGame.class.getDeclaredField("players");
-      playersField.setAccessible(true);
-      List<Player> players = (List<Player>) playersField.get(game);
-      assertNotNull(players, "players list should not be null");
-      assertTrue(players.isEmpty(), "players list should be empty initially");
-
-      Field turnManagerField = BoardGame.class.getDeclaredField("turnManager");
-      turnManagerField.setAccessible(true);
-      Object turnManager = turnManagerField.get(game);
-      assertNotNull(turnManager, "turnManager should be initialized");
-
-      Field boardField = BoardGame.class.getDeclaredField("board");
-      boardField.setAccessible(true);
-      Object board = boardField.get(game);
-      assertNotNull(board, "board should be initialized");
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      fail("Reflection failed: " + e.getMessage());
-    }
+  @BeforeEach
+  void setup() {
+    boardGame = new BoardGame();
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  void testAddPlayer() {
-    BoardGame game = new BoardGame();
-    game.addPlayer("Bobby");
+  void addPlayer_shouldAddPlayerSuccessfully() {
+    boardGame.addPlayer("Alice");
+    List<Player> players = boardGame.getPlayers();
 
-    try {
-      Field playersField = BoardGame.class.getDeclaredField("players");
-      playersField.setAccessible(true);
-      List<Player> players = (List<Player>) playersField.get(game);
-      assertEquals(1, players.size(), "Should be exactly one player");
-      assertEquals("Bobby", players.getFirst().getNameOfPiece(), "Player's name should be Bobby");
-    } catch (Exception e) {
-      fail("Reflection failed: " + e.getMessage());
-    }
+    assertEquals(1, players.size());
+    assertEquals("Alice", players.getFirst().getNameOfPiece());
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  void testAddMultiplePlayers() {
-    BoardGame game = new BoardGame();
-    game.addPlayer("Bobby");
-    game.addPlayer("Bobby");
+  void addPlayer_shouldSetStartingTileToFirstTile() {
+    boardGame.addPlayer("Bob");
+    Player bob = boardGame.getPlayers().getFirst();
 
-    try {
-      Field playersField = BoardGame.class.getDeclaredField("players");
-      playersField.setAccessible(true);
-      List<Player> players = (List<Player>) playersField.get(game);
-      assertEquals(2, players.size(), "Should be two players");
-      for (Player p : players) {
-        assertEquals("Bobby", p.getNameOfPiece(), "Each player's name should be Bobby");
-      }
-    } catch (Exception e) {
-      fail("Reflection failed: " + e.getMessage());
-    }
+    assertEquals(1, bob.getCurrentTile().getTileId()); // tile index 0 = ID 1
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  void testAddPlayerEmptyName() {
-    BoardGame game = new BoardGame();
-    game.addPlayer(""); // Add a player with empty name
-
-    try {
-      Field playersField = BoardGame.class.getDeclaredField("players");
-      playersField.setAccessible(true);
-      List<Player> players = (List<Player>) playersField.get(game);
-      assertEquals(1, players.size(), "Should be one player");
-      assertEquals("", players.getFirst().getNameOfPiece(), "Name should be empty string");
-    } catch (Exception e) {
-      fail("Reflection failed: " + e.getMessage());
-    }
+  void addPlayer_shouldThrowExceptionOnBlankName() {
+    assertThrows(IllegalArgumentException.class, () -> boardGame.addPlayer(""));
   }
 
-  @SuppressWarnings("unchecked")
   @Test
-  void testAddPlayerNullName() {
-    BoardGame game = new BoardGame();
-    game.addPlayer(null); // Add a player with null name
+  void addPlayer_shouldThrowExceptionOnNullName() {
+    assertThrows(IllegalArgumentException.class, () -> boardGame.addPlayer(null));
+  }
 
-    try {
-      Field playersField = BoardGame.class.getDeclaredField("players");
-      playersField.setAccessible(true);
-      List<Player> players = (List<Player>) playersField.get(game);
-      assertEquals(1, players.size(), "Should be one player");
-      assertNull(players.getFirst().getNameOfPiece(), "Name should be null");
-    } catch (Exception e) {
-      fail("Reflection failed: " + e.getMessage());
-    }
+  @Test
+  void getCurrentPlayer_shouldReturnFirstPlayerAfterAdd() {
+    boardGame.addPlayer("Charlie");
+    Player current = boardGame.getCurrentPlayer();
+
+    assertEquals("Charlie", current.getNameOfPiece());
+  }
+
+  @Test
+  void playNextTurn_shouldAdvanceGame_whenPlayersExist() {
+    boardGame.addPlayer("Alice");
+    boardGame.addPlayer("Bob");
+
+    Optional<TurnResult> result = boardGame.playNextTurn();
+    assertTrue(result.isPresent());
+    assertEquals("Alice", result.get().player().getNameOfPiece()); // first turn = Alice
+  }
+
+  @Test
+  void playNextTurn_shouldReturnEmpty_whenNoPlayers() {
+    Optional<TurnResult> result = boardGame.playNextTurn();
+    assertTrue(result.isEmpty());
+  }
+
+  @Test
+  void isGameOver_shouldBeFalseInitially() {
+    boardGame.addPlayer("Alice");
+    assertFalse(boardGame.isGameOver());
+  }
+
+  @Test
+  void getBoard_shouldReturnBoardInstance() {
+    assertNotNull(boardGame.getBoard());
+    assertEquals(90, boardGame.getBoard().getTileCount());
   }
 }

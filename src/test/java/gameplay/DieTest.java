@@ -2,6 +2,7 @@ package gameplay;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import snakesandladders.gameplay.Die;
 
 class DieTest {
 
@@ -14,4 +15,3 @@ class DieTest {
                 "Rolled value should be between 1 and 6, but got " + rolledValue);
     }
 }
-

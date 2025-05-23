@@ -1,8 +1,10 @@
 package gameplay;
 
-import board.Tile;
+import snakesandladders.board.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import snakesandladders.gameplay.Player;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerTest {
