@@ -56,6 +56,17 @@ Her er en forenklet domenemodell som viser de sentrale klassene og deres relasjo
 
 ## Struktur
 
+Prosjektet er organisert i moduler basert på funksjonalitet, med egne mapper for hvert spill, samt delt logikk i core. 
+Koden er plassert under src/main/java, mens ressurser som bilder og brettdata ligger i src/main/resources. 
+Denne strukturen gjør det lettere å vedlikeholde og utvide prosjektet.
+
+Figuren under er lagt til for å vise inndeling på en simpel måte, uten å inkludere alle elementer i applikasjonen. 
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/5a9dacb0-b0bb-4b07-baae-9f1dd5b7e257" alt="Struktur_simpel" />
+</div>
+
+
 ## Bidragsytere
 
 - Wayan S. K.
@@ -64,4 +75,3 @@ Her er en forenklet domenemodell som viser de sentrale klassene og deres relasjo
 ## Lisens
 Dette prosjektet er utviklet som en del av et skoleprosjekt i faget IDATG2003 ved NTNU i Gjøvik.
 Alt innhold er kun ment for læringsformål. Opphavsrett og eierskap kan være underlagt universitetets retningslinjer.
-
