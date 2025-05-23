@@ -63,9 +63,8 @@ Denne strukturen gjør det lettere å vedlikeholde og utvide prosjektet.
 Figuren under er lagt til for å vise inndeling på en simpel måte, uten å inkludere alle elementer i applikasjonen. 
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/5a9dacb0-b0bb-4b07-baae-9f1dd5b7e257" alt="Struktur_simpel" />
+  <img src="https://github.com/user-attachments/assets/5ed5cdb7-0804-4df0-9ce2-a85d64c22895" alt="Struktur_simpel" />
 </div>
-
 
 ## Bidragsytere
 
