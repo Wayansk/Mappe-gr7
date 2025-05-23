@@ -1,4 +1,4 @@
-package json_util;
+package snakesandladders.json_util;
 
 public class Jump {
   private int from;

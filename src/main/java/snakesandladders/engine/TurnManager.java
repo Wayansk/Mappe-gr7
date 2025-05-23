@@ -1,11 +1,11 @@
-package engine;
+package snakesandladders.engine;
 
-import board.Board;
-import board.Tile;
-import board.TileAction;
-import frontend.observer.BoardGameObserver;
-import gameplay.Dice;
-import gameplay.Player;
+import snakesandladders.board.Board;
+import snakesandladders.board.Tile;
+import snakesandladders.board.TileAction;
+import snakesandladders.frontend.observer.BoardGameObserver;
+import snakesandladders.gameplay.Dice;
+import snakesandladders.gameplay.Player;
 
 import java.util.*;
 

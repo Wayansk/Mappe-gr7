@@ -1,4 +1,4 @@
-package board;
+package snakesandladders.board;
 
 import com.google.gson.Gson;
 import exceptions.BoardIndexOutOfBoundsException;
@@ -9,8 +9,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import json_util.BoardDefinition;
-import json_util.Jump;
+import snakesandladders.json_util.BoardDefinition;
+import snakesandladders.json_util.Jump;
 
 /**
  * Represents a Snakes and Ladders game board. Loads the board structure from a JSON file.

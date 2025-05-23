@@ -1,6 +1,6 @@
-package engine;
+package snakesandladders.engine;
 
-import gameplay.Player;
+import snakesandladders.gameplay.Player;
 
 /**
  * A data record representing the result of a single player's turn.

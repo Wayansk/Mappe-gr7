@@ -1,12 +1,12 @@
-package frontend;
+package snakesandladders.frontend;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import engine.BoardGame;
-import frontend.observer.BoardGameObserver;
-import gameplay.Player;
+import snakesandladders.engine.BoardGame;
+import snakesandladders.frontend.observer.BoardGameObserver;
+import snakesandladders.gameplay.Player;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;

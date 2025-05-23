@@ -1,4 +1,4 @@
-package frontend.util;
+package snakesandladders.frontend.util;
 
 import javafx.application.Platform;
 import javafx.scene.control.ChoiceDialog;

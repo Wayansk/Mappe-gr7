@@ -1,9 +1,9 @@
-package engine;
+package snakesandladders.engine;
 
-import board.Board;
-import frontend.observer.BoardGameObserver;
-import gameplay.Dice;
-import gameplay.Player;
+import snakesandladders.board.Board;
+import snakesandladders.frontend.observer.BoardGameObserver;
+import snakesandladders.gameplay.Dice;
+import snakesandladders.gameplay.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;

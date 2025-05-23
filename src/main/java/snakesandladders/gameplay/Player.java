@@ -1,6 +1,6 @@
-package gameplay;
+package snakesandladders.gameplay;
 
-import board.Tile;
+import snakesandladders.board.Tile;
 
 /**
  * Represents a game piece with a specific name and a current tile.

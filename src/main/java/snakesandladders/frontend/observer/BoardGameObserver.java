@@ -1,4 +1,4 @@
-package frontend.observer;
+package snakesandladders.frontend.observer;
 
 public interface BoardGameObserver {
   void update();

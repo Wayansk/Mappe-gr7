@@ -1,6 +1,6 @@
-package board;
+package snakesandladders.board;
 
-import gameplay.Player;
+import snakesandladders.gameplay.Player;
 
 /**
  * Represents a tile on a game board. Each tile has an ID, an optional action that can be triggered

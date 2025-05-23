@@ -1,8 +1,8 @@
-package frontend;
+package snakesandladders.frontend;
 
-import engine.BoardGame;
-import frontend.util.BoardSetupHelper;
-import frontend.util.PlayerSetupHelper;
+import snakesandladders.engine.BoardGame;
+import snakesandladders.frontend.util.BoardSetupHelper;
+import snakesandladders.frontend.util.PlayerSetupHelper;
 
 import java.io.InputStream;
 import java.util.List;

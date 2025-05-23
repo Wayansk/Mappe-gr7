@@ -1,4 +1,4 @@
-package gameplay;
+package snakesandladders.gameplay;
 
 import java.util.Random;
 

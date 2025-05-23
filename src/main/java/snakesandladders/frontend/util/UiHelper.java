@@ -1,4 +1,4 @@
-package frontend.util;
+package snakesandladders.frontend.util;
 
 import java.util.Optional;
 import javafx.scene.control.Alert;

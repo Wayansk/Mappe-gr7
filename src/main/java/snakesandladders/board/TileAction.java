@@ -1,6 +1,6 @@
-package board;
+package snakesandladders.board;
 
-import gameplay.Player;
+import snakesandladders.gameplay.Player;
 
 /**
  * Represents an action that can be performed when a player lands on a specific tile.

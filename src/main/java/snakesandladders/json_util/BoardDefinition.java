@@ -1,4 +1,4 @@
-package json_util;
+package snakesandladders.json_util;
 import java.util.List;
 
 public class BoardDefinition {
