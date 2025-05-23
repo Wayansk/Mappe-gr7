@@ -6,13 +6,15 @@ import connectfour.engine.TurnResult;
 import connectfour.frontend.util.Connect4PlayerSetupHelper;
 import connectfour.model.Piece;
 import connectfour.model.Player;
-
 import connectfour.persistence.Connect4State;
 import connectfour.persistence.Connect4StateMapper;
 import connectfour.persistence.Connect4StateRepository;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -30,6 +32,11 @@ public class Connect4Controller extends BaseGameController {
   private final Label statusLabel = new Label();
   private final Connect4StateRepository repo = new Connect4StateRepository();
 
+  /**
+   * Constructs the controller, initializes players, view, controls, and stage.
+   *
+   * @param stage the primary JavaFX stage for the game
+   */
   public Connect4Controller(Stage stage) {
     super(stage);
 
@@ -68,6 +75,11 @@ public class Connect4Controller extends BaseGameController {
     stage.show();
   }
 
+  /**
+   * Handles a drop button click: plays a turn, updates view, and checks for win/draw.
+   *
+   * @param col zero-based column index for the move
+   */
   private void handleDrop(int col) {
     TurnResult turnResult = connect4Game.playTurn(col);
     connect4View.update();
@@ -120,6 +132,11 @@ public class Connect4Controller extends BaseGameController {
     statusLabel.setText("Turn: " + connect4Game.getCurrentPlayer().getName());
   }
 
+  /**
+   * Provides extra menu items for the "Game" menu; none for Connect 4.
+   *
+   * @return an empty list
+   */
   @Override
   protected List<MenuItem> getExtraMenuItems() {
     return List.of();

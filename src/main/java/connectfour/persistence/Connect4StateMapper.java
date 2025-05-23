@@ -11,6 +11,13 @@ import java.util.stream.IntStream;
 public class Connect4StateMapper {
   private Connect4StateMapper() {}
 
+  /**
+   * Converts the current state of a {@link Connect4Game} into a
+   * {@link Connect4State} DTO suitable for persistence.
+   *
+   * @param connect4Game the Connect 4 game instance to snapshot
+   * @return a new Connect4State containing player names, current index, and grid pieces
+   */
   public static Connect4State toState(Connect4Game connect4Game) {
     Connect4State connect4State = new Connect4State();
 

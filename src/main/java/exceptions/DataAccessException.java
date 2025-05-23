@@ -1,4 +1,4 @@
-package io.persistence;
+package exceptions;
 
 /**
  * Runtime exception for failures during data access operations

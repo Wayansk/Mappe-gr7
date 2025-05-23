@@ -43,13 +43,26 @@ public class SnakesAndLaddersController extends BaseGameController {
 
   private final SnakesAndLaddersStateRepository repo = new SnakesAndLaddersStateRepository();
 
+  /**
+   * Constructs the controller using a board chosen by the user.
+   * <p>
+   * Prompts for a JSON resource via {@link BoardSetupHelper}, may exit
+   * if no selection is made.
+   *
+   * @param stage the primary JavaFX stage
+   */
   public SnakesAndLaddersController(Stage stage) {
     this(stage, BoardSetupHelper.askBoardJsonResource());
   }
+
   /**
-   * Creates a new game controller and starts the game setup.
+   * Full constructor that sets up the game with a specific board JSON.
+   * <p>
+   * Initializes players, loads the board image if available,
+   * configures controls, and displays the UI.
    *
-   * @param stage the JavaFX primary stage
+   * @param stage the primary JavaFX stage
+   * @param boardJsonResource classpath path to the board-definition JSON
    */
   public SnakesAndLaddersController(Stage stage, String boardJsonResource) {
     super(stage);
@@ -170,6 +183,11 @@ public class SnakesAndLaddersController extends BaseGameController {
     return List.of(changeBoard);
   }
 
+  /**
+   * Restarts the current game with the same board configuration.
+   *
+   * @param stage the primary Stage to reinitialize
+   */
   @Override
   protected void onRestart(Stage stage) {
     new SnakesAndLaddersController(stage, currentBoardJson);

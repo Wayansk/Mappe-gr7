@@ -2,6 +2,7 @@ package io.persistence;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import exceptions.DataAccessException;
 import io.json.CustomGson;
 import io.util.FileUtils;
 import io.util.PathProvider;
