@@ -7,7 +7,9 @@ import snakesandladders.frontend.observer.BoardGameObserver;
 import snakesandladders.gameplay.Dice;
 import snakesandladders.gameplay.Player;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Handles the logic for turn-based gameplay. Manages whose turn it is, rolls dice, moves players,
@@ -112,5 +114,31 @@ public class TurnManager {
         currentPlayer.getCurrentTile().getTileId(),
         hasWon
     ));
+  }
+
+  public void movePlayerTo(String playerName, int  tileId) {
+    for (Player player : players) {
+      if (player.getNameOfPiece().equals(playerName)) {
+        player.setCurrentTile(board.getTile(tileId));
+        break;
+      }
+    }
+    notifyObservers();
+  }
+
+  public void setCurrentPlayerIndex(String playerName) {
+    for (int i = 0; i < players.size(); i++) {
+      if (players.get(i).getNameOfPiece().equals(playerName)) {
+        this.currentPlayerIndex = i;
+        notifyObservers();
+        return;
+      }
+    }
+  }
+
+  public void reset() {
+    currentPlayerIndex = 0;
+    gameOver = false;
+    notifyObservers();
   }
 }

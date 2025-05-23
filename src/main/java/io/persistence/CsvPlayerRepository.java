@@ -8,8 +8,8 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
-import board.Board;
-import gameplay.Player;
+import snakesandladders.board.Board;
+import snakesandladders.gameplay.Player;
 
 /**
  * CSV-backed {@link FileRepository} for {@link Player} objects

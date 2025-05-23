@@ -1,6 +1,8 @@
 package engine;
 
-import gameplay.Player;
+import snakesandladders.engine.BoardGame;
+import snakesandladders.engine.TurnResult;
+import snakesandladders.gameplay.Player;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

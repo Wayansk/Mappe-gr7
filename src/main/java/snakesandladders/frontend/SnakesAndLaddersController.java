@@ -1,47 +1,61 @@
 package snakesandladders.frontend;
 
+import app.BaseGameController;
+import javafx.application.Platform;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import snakesandladders.engine.BoardGame;
 import snakesandladders.frontend.util.BoardSetupHelper;
 import snakesandladders.frontend.util.PlayerSetupHelper;
+import snakesandladders.persistence.SnakesAndLaddersState;
+import snakesandladders.persistence.SnakesAndLaddersStateMapper;
+import snakesandladders.persistence.SnakesAndLaddersStateRepository;
 
 import java.io.InputStream;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import javafx.application.Platform;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
-
 /**
  * Controls the GUI for the Snakes and Ladders game.
  */
-public class GameController {
+public class SnakesAndLaddersController extends BaseGameController {
 
   private static final double WINDOW_WIDTH = 800;
-  private static final double WINDOW_HEIGHT = 650;
+  private static final double WINDOW_HEIGHT = 700;
 
   private final BoardGame boardGame;
-  private GameBoardView boardView;
+  private final Stage stage;
+  private final String currentBoardJson;
+  private SnakesAndLaddersBoardView boardView;
 
   private final Button rollButton = new Button("Roll Dice");
   private final Label statusLabel = new Label("Welcome to Snakes & Ladders");
 
+  private final SnakesAndLaddersStateRepository repo = new SnakesAndLaddersStateRepository();
+
+  public SnakesAndLaddersController(Stage stage) {
+    this(stage, BoardSetupHelper.askBoardJsonResource());
+  }
   /**
    * Creates a new game controller and starts the game setup.
    *
    * @param stage the JavaFX primary stage
    */
-  public GameController(Stage stage) {
-    String boardJsonResource = BoardSetupHelper.askBoardJsonResource();
-    boardGame = new BoardGame(boardJsonResource);
+  public SnakesAndLaddersController(Stage stage, String boardJsonResource) {
+    super(stage);
+    this.stage = stage;
+    this.currentBoardJson = boardJsonResource;
+    this.boardGame = new BoardGame(boardJsonResource);
 
     Optional<Integer> optionalPlayerCount = PlayerSetupHelper.askPlayerCount();
     if (optionalPlayerCount.isEmpty()) {
@@ -68,7 +82,7 @@ public class GameController {
       double rawTileHeight = boardImage.getHeight() / rows;
       double tileSize = Math.min(rawTileWidth, rawTileHeight);
 
-      boardView = new GameBoardView(boardGame, tileSize, tileSize);
+      boardView = new SnakesAndLaddersBoardView(boardGame, tileSize, tileSize);
 
       ImageView imageView = new ImageView(boardImage);
       imageView.setPreserveRatio(false);
@@ -78,7 +92,7 @@ public class GameController {
       boardPane = new StackPane(imageView, boardView.getBoardGrid());
       StackPane.setAlignment(imageView, Pos.TOP_LEFT);
     } else {
-      boardView = new GameBoardView(boardGame);
+      boardView = new SnakesAndLaddersBoardView(boardGame);
       GridPane grid = boardView.getBoardGrid();
       double totalWidth = (double) boardView.getCols() * 60;
       double totalHeight = (double) boardView.getRows() * 60;
@@ -96,7 +110,7 @@ public class GameController {
     controls.setPadding(new Insets(10));
 
     BorderPane root = new BorderPane();
-    root.setTop(controls);
+    root.setTop(new VBox(menuBar, controls));
     root.setCenter(boardPane);
     root.setRight(boardView.buildStatusPane());
 
@@ -120,5 +134,54 @@ public class GameController {
         rollButton.setDisable(true);
       }
     });
+  }
+
+  private void showAlert(String msg) {
+    Alert alert = new Alert(Alert.AlertType.INFORMATION, msg);
+    alert.setHeaderText(null);
+    alert.showAndWait();
+  }
+
+  private void saveGame() {
+    SnakesAndLaddersState snakesAndLaddersState = SnakesAndLaddersStateMapper.toState(boardGame);
+    repo.save(List.of(snakesAndLaddersState));
+    showAlert("Snakes & Ladders game saved.");
+  }
+
+  private void loadGame() {
+    List<SnakesAndLaddersState> saved = repo.loadAll();
+    if (saved.isEmpty()) {
+      showAlert("No saved Snakes and Ladders game found.");
+      return;
+    }
+    SnakesAndLaddersState snakesAndLaddersState = saved.get(0);
+    SnakesAndLaddersStateMapper.fromState(boardGame, snakesAndLaddersState);
+    boardView.update();
+    statusLabel.setText("Turn: " + boardGame.getCurrentPlayer().getNameOfPiece());
+  }
+
+  @Override
+  protected List<MenuItem> getExtraMenuItems() {
+    MenuItem changeBoard = new MenuItem("Change Board");
+    changeBoard.setOnAction(e -> {
+      String newJson = BoardSetupHelper.askBoardJsonResource();
+      new SnakesAndLaddersController(stage, newJson);
+    });
+    return List.of(changeBoard);
+  }
+
+  @Override
+  protected void onRestart(Stage stage) {
+    new SnakesAndLaddersController(stage, currentBoardJson);
+  }
+
+  @Override
+  protected void onSave() {
+    saveGame();
+  }
+
+  @Override
+  protected void onLoad() {
+    loadGame();
   }
 }

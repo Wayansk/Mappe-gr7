@@ -1,7 +1,7 @@
 package io.persistence;
 
-import board.Board;
-import gameplay.Player;
+import snakesandladders.board.Board;
+import snakesandladders.gameplay.Player;
 import io.util.PathProvider;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CsvPlayerRepositoryTest {
+class CsvPlayerRepositoryTest {
 
   private static final Path Test_DIRECTORY = Path.of("src/test/resource/testdata");
   private CsvPlayerRepository repository;

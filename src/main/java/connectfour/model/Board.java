@@ -11,10 +11,10 @@ public class Board {
   public static final int DEFAULT_COLS = 7;
   private static final int WIN_COUNT = 4;
   private static final int[][] DIRECTIONS = {
-      {0,1}, // horizontal
-      {1,0}, // vertical
-      {1,1}, // diagonal down
-      {-1,1} // diagonal up
+      {0, 1}, // horizontal
+      {1, 0}, // vertical
+      {1, 1}, // diagonal down
+      {-1, 1} // diagonal up
   };
 
   private final int rows;
@@ -111,5 +111,13 @@ public class Board {
 
   public int getCols() {
     return cols;
+  }
+
+  public void clear() {
+    for (Cell[] row : grid) {
+      for (Cell cell : row) {
+        cell.setPiece(null);
+      }
+    }
   }
 }

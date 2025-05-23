@@ -1,12 +1,5 @@
 package snakesandladders.frontend;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import snakesandladders.engine.BoardGame;
-import snakesandladders.frontend.observer.BoardGameObserver;
-import snakesandladders.gameplay.Player;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -14,11 +7,18 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import snakesandladders.engine.BoardGame;
+import snakesandladders.frontend.observer.BoardGameObserver;
+import snakesandladders.gameplay.Player;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Builds a standard Snakes and Ladders board grid.
  */
-public class GameBoardView implements BoardGameObserver {
+public class SnakesAndLaddersBoardView implements BoardGameObserver {
 
   private static final int TOKEN_SIZE = 15;
 
@@ -34,14 +34,14 @@ public class GameBoardView implements BoardGameObserver {
   private final Map<Player, Circle> playerIcons = new HashMap<>();
 
 
-  public GameBoardView(BoardGame boardGame) {
+  public SnakesAndLaddersBoardView(BoardGame boardGame) {
     this(boardGame, 60, 60);
   }
 
   /**
    * Creates a new GameBoardView.
    */
-  public GameBoardView(BoardGame boardGame, double tileWidth, double tileHeight) {
+  public SnakesAndLaddersBoardView(BoardGame boardGame, double tileWidth, double tileHeight) {
     this.boardGame = boardGame;
     this.numberOfRows = boardGame.getBoard().getRows();
     this.numberOfColumns = boardGame.getBoard().getCols();

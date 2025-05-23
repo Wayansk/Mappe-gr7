@@ -75,4 +75,23 @@ public class Connect4Game {
   public Player getWinner() {
     return winner;
   }
+
+  public void reset() {
+    board.clear();
+    currentPlayerIndex = 0;
+    winner = null;
+    notifyObservers();
+  }
+
+  public int getCurrentPlayerIndex() {
+    return currentPlayerIndex;
+  }
+
+  public void setCurrentPlayerIndex(int index) {
+    if (index < 0 || index >= players.size()) {
+      throw new IllegalArgumentException("Invalid player index: " + index);
+    }
+    this.currentPlayerIndex = index;
+    notifyObservers();
+  }
 }

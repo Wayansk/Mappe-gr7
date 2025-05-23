@@ -3,7 +3,10 @@ package board;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.lang.reflect.Field;
-import gameplay.Player;
+
+import snakesandladders.board.Board;
+import snakesandladders.board.Tile;
+import snakesandladders.gameplay.Player;
 
 class BoardTest {
 

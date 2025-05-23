@@ -1,32 +1,39 @@
 package connectfour.frontend;
 
+import app.BaseGameController;
 import connectfour.engine.Connect4Game;
 import connectfour.engine.TurnResult;
 import connectfour.frontend.util.Connect4PlayerSetupHelper;
 import connectfour.model.Piece;
 import connectfour.model.Player;
 
+import connectfour.persistence.Connect4State;
+import connectfour.persistence.Connect4StateMapper;
+import connectfour.persistence.Connect4StateRepository;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class Connect4Controller {
+import java.util.List;
+
+public class Connect4Controller extends BaseGameController {
   private static final int TILE_SIZE = 80;
 
   private final Connect4Game connect4Game = new Connect4Game();
   private final Connect4View connect4View;
   private final GridPane controls = new GridPane();
   private final Label statusLabel = new Label();
+  private final Connect4StateRepository repo = new Connect4StateRepository();
 
   public Connect4Controller(Stage stage) {
-    var playerNames = Connect4PlayerSetupHelper.collectPlayerNames();
+    super(stage);
 
+    List<String> playerNames = Connect4PlayerSetupHelper.collectPlayerNames();
     connect4Game.addPlayer(new Player(playerNames.get(0), Piece.RED));
     connect4Game.addPlayer(new Player(playerNames.get(1), Piece.YELLOW));
 
@@ -46,7 +53,8 @@ public class Connect4Controller {
     }
 
     BorderPane root = new BorderPane();
-    root.setTop(controls);
+    root.setTop(menuBar);
+    root.setTop(new VBox(menuBar, controls));
     root.setCenter(connect4View.getGridPane());
     root.setBottom(statusLabel);
     BorderPane.setMargin(statusLabel, new Insets(5));
@@ -84,5 +92,36 @@ public class Connect4Controller {
     Alert alert = new Alert(Alert.AlertType.INFORMATION, msg);
     alert.setHeaderText(null);
     alert.showAndWait();
+  }
+
+  @Override
+  protected void onSave() {
+    Connect4State connect4State = Connect4StateMapper.toState(connect4Game);
+    repo.save(connect4State);
+    showAlert("Game saved");
+  }
+
+  @Override
+  protected void onLoad() {
+    List<Connect4State> saved = repo.loadAll();
+    if (saved.isEmpty()) {
+      showAlert("No saved game found");
+    } else {
+      Connect4StateMapper.fromState(connect4Game, saved.get(0));
+      connect4View.update();
+      statusLabel.setText("Turn: " + connect4Game.getCurrentPlayer().getName());
+    }
+  }
+
+  @Override
+  protected void onRestart(Stage stage) {
+    connect4Game.reset();
+    connect4View.update();
+    statusLabel.setText("Turn: " + connect4Game.getCurrentPlayer().getName());
+  }
+
+  @Override
+  protected List<MenuItem> getExtraMenuItems() {
+    return List.of();
   }
 }

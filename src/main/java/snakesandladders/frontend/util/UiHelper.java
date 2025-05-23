@@ -1,8 +1,9 @@
 package snakesandladders.frontend.util;
 
-import java.util.Optional;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextInputDialog;
+
+import java.util.Optional;
 
 /**
  * Utility class for showing dialogs and alerts in the GUI.

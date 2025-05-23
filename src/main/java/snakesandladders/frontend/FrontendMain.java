@@ -16,7 +16,7 @@ public class FrontendMain extends Application {
    */
   @Override
   public void start(Stage primaryStage) {
-    new GameController(primaryStage);
+    new SnakesAndLaddersController(primaryStage);
   }
 
   /**

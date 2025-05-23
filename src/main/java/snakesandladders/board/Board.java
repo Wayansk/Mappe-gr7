@@ -3,20 +3,21 @@ package snakesandladders.board;
 import com.google.gson.Gson;
 import exceptions.BoardIndexOutOfBoundsException;
 import exceptions.BoardResourceNotFoundException;
+import snakesandladders.json_util.BoardDefinition;
+import snakesandladders.json_util.Jump;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-import snakesandladders.json_util.BoardDefinition;
-import snakesandladders.json_util.Jump;
-
 /**
  * Represents a Snakes and Ladders game board. Loads the board structure from a JSON file.
  */
 public class Board {
 
+  private final String resourcePath;
   private final List<Tile> tiles;
   private final int size;
   private final int rows;
@@ -27,6 +28,7 @@ public class Board {
    * ladders, and snakes.
    */
   public Board(String resourcePath) {
+    this.resourcePath = resourcePath;
     BoardDefinition boardDefinition = loadDefinition(resourcePath);
     this.size = boardDefinition.getSize();
     this.rows = boardDefinition.getRows();
@@ -94,5 +96,9 @@ public class Board {
 
   public int getCols() {
     return cols;
+  }
+
+  public String getResourcePath() {
+    return resourcePath;
   }
 }

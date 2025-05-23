@@ -4,6 +4,7 @@ import snakesandladders.board.Board;
 import snakesandladders.frontend.observer.BoardGameObserver;
 import snakesandladders.gameplay.Dice;
 import snakesandladders.gameplay.Player;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -90,5 +91,25 @@ public class BoardGame {
 
   public void addObserver(BoardGameObserver boardGameObserver) {
     turnManager.addObserver(boardGameObserver);
+  }
+
+  public String getBoardDefinitionPath() {
+    return board.getResourcePath();
+  }
+
+  public void movePlayerTo(String playerName, int tileId) {
+    turnManager.movePlayerTo(playerName, tileId);
+  }
+
+  public void setCurrentPlayerIndex(String playerName) {
+    turnManager.setCurrentPlayerIndex(playerName);
+  }
+
+  public List<Player> getPlayer() {
+    return turnManager.getPlayers();
+  }
+
+  public void reset() {
+    turnManager.reset();
   }
 }
